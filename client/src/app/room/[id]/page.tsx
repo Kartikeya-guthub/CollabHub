@@ -198,12 +198,12 @@ export default function RoomPage() {
         {room.type === "both" && (
           <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
             <Panel defaultSize={50} minSize={20}>
-              <PanelGroup direction="horizontal">
-                <Panel defaultSize={60} minSize={20}>
+              <PanelGroup direction="vertical">
+                <Panel defaultSize={70} minSize={20}>
                   <CodeEditor doc={docRef.current} awareness={awarenessRef.current} />
                 </Panel>
-                <VerticalHandle />
-                <Panel defaultSize={40} minSize={10}>
+                <HorizontalHandle />
+                <Panel defaultSize={30} minSize={10}>
                   <ConsolePanel 
                     roomId={id as string} 
                     getCode={() => docRef.current?.getText("monaco").toString() || ""}
