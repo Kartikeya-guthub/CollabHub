@@ -1,5 +1,4 @@
 "use client";
-// @ts-nocheck
 import { useState } from "react";
 import { Editor, createShapeId } from "tldraw";
 
@@ -88,7 +87,7 @@ export default function DiagramGenerator({ editor, token }: { editor: Editor | n
             start: { x: startX, y: startY },
             end: { x: endX, y: endY },
             text: c.label || "",
-          },
+          } as any,
         });
       });
 
