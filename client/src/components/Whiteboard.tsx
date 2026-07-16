@@ -2,7 +2,6 @@
 "use client";
 import { Tldraw, Editor } from "tldraw";
 import { useSync } from "@tldraw/sync";
-import "tldraw/tldraw.css";
 
 interface WhiteboardProps {
   roomId: string;

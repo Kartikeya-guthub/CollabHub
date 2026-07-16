@@ -78,6 +78,7 @@ export default function DiagramGenerator({ editor, token }: { editor: Editor | n
         const endX = toShape.x + (toShape.props as any).w / 2;
         const endY = toShape.y;
 
+        // Create the arrow shape
         editor.createShape({
           id: createShapeId(),
           type: "arrow",
@@ -86,9 +87,20 @@ export default function DiagramGenerator({ editor, token }: { editor: Editor | n
           props: {
             start: { x: startX, y: startY },
             end: { x: endX, y: endY },
-            text: c.label || "",
           } as any,
         });
+
+        // Create text label if present
+        if (c.label) {
+          editor.createShape({
+            type: "text",
+            x: (startX + endX) / 2,
+            y: (startY + endY) / 2,
+            props: {
+              text: c.label,
+            },
+          });
+        }
       });
 
       setDescription("");
