@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # The actual Piston API (Internal only, not exposed to internet)
+  piston_api:
+    image: ghcr.io/engineer-man/piston
+    container_name: piston_api
+    restart: always
+    privileged: true
+    tmpfs:
+      - /tmp
+
+  # Nginx Reverse Proxy (Exposed to internet, enforces API key)
+  nginx_proxy:
+    image: nginx:alpine
+    container_name: piston_nginx_proxy
+    restart: always
+    ports:
+      - "2000:2000"
+    environment:
+      - PISTON_API_KEY=${PISTON_API_KEY}
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/nginx.conf.template
+    command: /bin/sh -c "envsubst '\\$PISTON_API_KEY' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    depends_on:
+      - piston_api

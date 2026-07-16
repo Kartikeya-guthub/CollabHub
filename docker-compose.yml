@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: localdev
       POSTGRES_DB: collabhub
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,12 +18,24 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6381:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  piston_api:
+    image: ghcr.io/engineer-man/piston
+    container_name: piston_api
+    ports:
+      - "2000:2000"
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ./piston_data:/piston/packages
+    tmpfs:
+      - /tmp
 
 volumes:
   pgdata:

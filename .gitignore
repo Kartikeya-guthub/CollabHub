@@ -4,3 +4,9 @@ dist
 .env
 .env.local
 .agent_terminal_logs.md
+phase-1-setup-guide.md
+
+known_issues.md
+
+TEST_PIPELINES.md
+piston_data/

@@ -1,0 +1,19 @@
+events {}
+
+http {
+    server {
+        listen 2000;
+        
+        location / {
+            # Enforce API Key
+            if ($http_x_piston_api_key != "${PISTON_API_KEY}") {
+                return 401 "Unauthorized: Invalid or missing API Key.\n";
+            }
+            
+            # Forward to internal Piston API
+            proxy_pass http://piston_api:2000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+    }
+}
