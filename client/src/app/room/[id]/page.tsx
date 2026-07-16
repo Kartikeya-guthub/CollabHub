@@ -14,6 +14,7 @@ const Whiteboard = dynamic(() => import("@/components/Whiteboard"), { ssr: false
 import UnifiedPresenceList from "@/components/UnifiedPresenceList";
 import ConsolePanel from "@/components/ConsolePanel";
 import AskAIPanel from "@/components/AskAIPanel";
+import DiagramGenerator from "@/components/DiagramGenerator";
 import { initLocalPresence, syncTldrawIdentity } from "@/lib/presence";
 import { Editor } from "tldraw";
 import { Socket } from "socket.io-client";
@@ -175,18 +176,26 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <div style={{ width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <Whiteboard 
-              roomId={id as string} 
-              token={localStorage.getItem("token") || ""} 
-              onMount={(ed) => {
-                setEditor(ed);
-                const userId = localStorage.getItem("userId") || "anon";
-                const displayName = localStorage.getItem("displayName") || "User";
-                syncTldrawIdentity(ed, userId, displayName);
-              }}
-            />
-          </div>
+          <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <Panel defaultSize={85} minSize={40}>
+              <Whiteboard 
+                roomId={id as string} 
+                token={localStorage.getItem("token") || ""} 
+                onMount={(ed) => {
+                  setEditor(ed);
+                  const userId = localStorage.getItem("userId") || "anon";
+                  const displayName = localStorage.getItem("displayName") || "User";
+                  syncTldrawIdentity(ed, userId, displayName);
+                }}
+              />
+            </Panel>
+            <HorizontalHandle />
+            <Panel defaultSize={15} minSize={8}>
+              <div style={{ padding: "12px", height: "100%", backgroundColor: "#1e1e1e", color: "white" }}>
+                <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
+              </div>
+            </Panel>
+          </PanelGroup>
         )}
 
         {room.type === "both" && (
