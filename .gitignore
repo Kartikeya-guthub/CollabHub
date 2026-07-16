@@ -10,3 +10,7 @@ known_issues.md
 
 TEST_PIPELINES.md
 piston_data/
+.agents/
+DEPLOYMENT.md
+flow-map.md
+known_issues.md
