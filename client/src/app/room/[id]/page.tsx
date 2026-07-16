@@ -196,7 +196,7 @@ export default function RoomPage() {
         )}
 
         {room.type === "both" && (
-          <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <PanelGroup direction="horizontal" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
             <Panel defaultSize={50} minSize={20}>
               <PanelGroup direction="vertical">
                 <Panel defaultSize={70} minSize={20}>
@@ -214,9 +214,9 @@ export default function RoomPage() {
               </PanelGroup>
             </Panel>
             
-            <HorizontalHandle />
+            <VerticalHandle />
             
-            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa", position: "relative" }}>
+            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa" }}>
               <Whiteboard 
                 roomId={id as string} 
                 token={localStorage.getItem("token") || ""} 

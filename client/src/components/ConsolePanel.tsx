@@ -48,9 +48,9 @@ export default function ConsolePanel({ roomId, getCode, language, token }: Conso
   };
 
   return (
-    <div style={{ display: "flex", width: "100%", height: "100%", backgroundColor: "#1e1e1e", color: "#d4d4d4", fontFamily: "monospace", fontSize: "13px" }}>
-      {/* Left: Input */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: "1px solid #333" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", backgroundColor: "#1e1e1e", color: "#d4d4d4", fontFamily: "monospace", fontSize: "13px" }}>
+      {/* Top: Input */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", borderBottom: "1px solid #333" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderBottom: "1px solid #333", backgroundColor: "#252526" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <SquareTerminal size={14} />
@@ -79,7 +79,7 @@ export default function ConsolePanel({ roomId, getCode, language, token }: Conso
         />
       </div>
 
-      {/* Right: Output */}
+      {/* Bottom: Output */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "8px 12px", borderBottom: "1px solid #333", backgroundColor: "#252526", display: "flex", alignItems: "center", gap: "6px" }}>
           <Terminal size={14} />
