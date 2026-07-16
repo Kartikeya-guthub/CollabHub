@@ -98,7 +98,7 @@ export default function DiagramGenerator({ editor, token }: { editor: Editor | n
             y: (startY + endY) / 2,
             props: {
               text: c.label,
-            },
+            } as any,
           });
         }
       });
