@@ -6,7 +6,7 @@ import { Awareness } from "y-protocols/awareness";
 import { getSocket } from "@/lib/socket";
 import { bindYjsToSocket } from "@/lib/yjsProvider";
 import dynamic from "next/dynamic";
-import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { GripVertical, GripHorizontal } from "lucide-react";
 
 const CodeEditor = dynamic(() => import("@/components/CodeEditor"), { ssr: false });
