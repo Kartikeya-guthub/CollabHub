@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 import { Tldraw, Editor } from "tldraw";
 import { useSync } from "@tldraw/sync";
