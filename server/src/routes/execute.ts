@@ -117,7 +117,7 @@ export const executeRouter = (io: Server) => {
 
             try {
               // Try local Piston container first
-              const { data } = await axios.post(`${PISTON_URL}/api/v2/execute`, payload, { 
+              const { data } = await axios.post(`${process.env.PISTON_URL || "http://localhost:2000"}/api/v2/execute`, payload, { 
                 maxContentLength: 1048576,
                 headers: {
                   "X-Piston-Api-Key": process.env.PISTON_API_KEY || ""
