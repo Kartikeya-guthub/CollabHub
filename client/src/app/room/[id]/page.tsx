@@ -178,7 +178,7 @@ export default function RoomPage() {
 
         {room.type === "whiteboard" && (
           <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <Panel defaultSize={85} minSize={40}>
+            <Panel defaultSize={85} minSize={40} style={{ backgroundColor: "#fafafa", position: "relative" }}>
               <Whiteboard 
                 roomId={id as string} 
                 token={localStorage.getItem("token") || ""} 
@@ -200,14 +200,14 @@ export default function RoomPage() {
         )}
 
         {room.type === "both" && (
-          <PanelGroup direction="horizontal" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
             <Panel defaultSize={50} minSize={20}>
-              <PanelGroup direction="vertical">
-                <Panel defaultSize={70} minSize={20}>
+              <PanelGroup direction="horizontal">
+                <Panel defaultSize={60} minSize={20}>
                   <CodeEditor doc={docRef.current} awareness={awarenessRef.current} />
                 </Panel>
-                <HorizontalHandle />
-                <Panel defaultSize={30} minSize={10}>
+                <VerticalHandle />
+                <Panel defaultSize={40} minSize={10}>
                   <ConsolePanel 
                     roomId={id as string} 
                     getCode={() => docRef.current?.getText("monaco").toString() || ""}
@@ -218,9 +218,9 @@ export default function RoomPage() {
               </PanelGroup>
             </Panel>
             
-            <VerticalHandle />
+            <HorizontalHandle />
             
-            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa" }}>
+            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa", position: "relative" }}>
               <Whiteboard 
                 roomId={id as string} 
                 token={localStorage.getItem("token") || ""} 

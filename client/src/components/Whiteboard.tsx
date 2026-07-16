@@ -12,11 +12,11 @@ interface WhiteboardProps {
 
 export default function Whiteboard({ roomId, token, onMount }: WhiteboardProps) {
   const store = useSync({
-    uri: `${process.env.NEXT_PUBLIC_WS_URL}/tldraw-sync/${roomId}?token=${token}`,
+    uri: `${process.env.NEXT_PUBLIC_WS_URL || "http://localhost:4000"}/tldraw-sync/${roomId}?token=${token}`,
   });
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <Tldraw store={store} onMount={onMount} />
     </div>
   );

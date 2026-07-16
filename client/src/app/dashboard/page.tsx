@@ -106,9 +106,9 @@ export default function Dashboard() {
               value={type} 
               onChange={(e) => setType(e.target.value as Room["type"])}
             >
-              <option value="code">Code Editor</option>
-              <option value="whiteboard">Whiteboard</option>
-              <option value="both">Both (Split View)</option>
+              <option value="code" style={{ background: "#1e1e1e", color: "#fff" }}>Code Editor</option>
+              <option value="whiteboard" style={{ background: "#1e1e1e", color: "#fff" }}>Whiteboard</option>
+              <option value="both" style={{ background: "#1e1e1e", color: "#fff" }}>Both (Split View)</option>
             </select>
           </div>
 
