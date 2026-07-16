@@ -37,7 +37,7 @@ export const attachTldrawSync = (httpServer: HttpServer) => {
 
     const roomId = url.pathname.split("/")[2];
     const token = url.searchParams.get("token");
-    const sessionId = url.searchParams.get("sessionId")!;
+    const sessionId = url.searchParams.get("sessionId") || Math.random().toString(36).substring(7);
 
     if (!token) return socket.destroy();
 

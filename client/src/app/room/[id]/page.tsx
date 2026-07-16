@@ -177,26 +177,22 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <Panel defaultSize={85} minSize={40} style={{ backgroundColor: "#fafafa", position: "relative" }}>
-              <Whiteboard 
-                roomId={id as string} 
-                token={localStorage.getItem("token") || ""} 
-                onMount={(ed) => {
-                  setEditor(ed);
-                  const userId = localStorage.getItem("userId") || "anon";
-                  const displayName = localStorage.getItem("displayName") || "User";
-                  syncTldrawIdentity(ed, userId, displayName);
-                }}
-              />
-            </Panel>
-            <HorizontalHandle />
-            <Panel defaultSize={15} minSize={8}>
-              <div style={{ padding: "12px", height: "100%", backgroundColor: "#1e1e1e", color: "white" }}>
-                <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
-              </div>
-            </Panel>
-          </PanelGroup>
+          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa" }}>
+            <Whiteboard 
+              roomId={id as string} 
+              token={localStorage.getItem("token") || ""} 
+              onMount={(ed) => {
+                setEditor(ed);
+                const userId = localStorage.getItem("userId") || "anon";
+                const displayName = localStorage.getItem("displayName") || "User";
+                syncTldrawIdentity(ed, userId, displayName);
+              }}
+            />
+            {/* Floating Diagram Generator */}
+            <div style={{ position: "absolute", top: "20px", right: "20px", width: "300px", maxHeight: "50%", overflowY: "auto", backgroundColor: "#1e1e1e", color: "white", padding: "16px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 1000 }}>
+              <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
+            </div>
+          </div>
         )}
 
         {room.type === "both" && (
