@@ -104,27 +104,28 @@ export default function DiagramGenerator({ editor, token }: { editor: Editor | n
       <p style={{ opacity: 0.8, fontSize: "0.9rem", margin: 0 }}>
         Describe a flow or diagram and the AI will draw it on the whiteboard for you.
       </p>
-      <div style={{ flex: 1, display: "flex", alignItems: "flex-end", gap: "8px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" }}>
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && generate()}
           disabled={loading || !editor}
-          placeholder="e.g., three boxes in a pipeline..."
+          placeholder="e.g., three boxes in a pipe"
           style={{ 
-            flex: 1, 
+            width: "100%", 
             background: "rgba(0,0,0,0.2)",
             border: "1px solid var(--glass-border)",
             color: "var(--foreground)",
             padding: "12px",
-            borderRadius: "8px"
+            borderRadius: "8px",
+            boxSizing: "border-box"
           }}
         />
         <button 
           onClick={generate} 
           disabled={loading || !editor || !description.trim()}
           className="btn-primary"
-          style={{ padding: "0 16px", borderRadius: "8px", height: "100%", maxHeight: "46px" }}
+          style={{ width: "100%", padding: "12px", borderRadius: "8px", whiteSpace: "nowrap", boxSizing: "border-box" }}
         >
           {loading ? "Generating..." : "Generate Diagram"}
         </button>

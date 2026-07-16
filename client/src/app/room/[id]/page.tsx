@@ -133,10 +133,12 @@ export default function RoomPage() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <button style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "white", padding: "6px 12px", borderRadius: "6px", cursor: "pointer" }} onClick={() => router.push("/dashboard")}>← Dashboard</button>
-          <h1 style={{ fontSize: "1.2rem", margin: 0, fontWeight: 600 }}>{room.name}</h1>
-          <span style={{ fontSize: "0.8rem", padding: "4px 8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", textTransform: "capitalize" }}>
-            {room.type} Mode
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>{room.name}</span>
+            <span style={{ fontSize: "0.8rem", padding: "4px 8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", textTransform: "capitalize", marginLeft: "4px" }}>
+              {room.type} Mode
+            </span>
+          </div>
         </div>
         
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -148,7 +150,7 @@ export default function RoomPage() {
             onClick={() => {
               const link = `${window.location.origin}/room/${room.id}/join`;
               navigator.clipboard.writeText(link);
-              alert("Invite link copied!");
+              alert("Room link copied to clipboard!");
             }}
           >
             Share Room
@@ -156,8 +158,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      {/* Main Resizable Workspace */}
-      <div style={{ flex: 1, padding: "0 12px 12px 12px", minHeight: 0 }}>
+      <div style={{ flex: 1, padding: "0 12px 12px 12px", display: "flex", flexDirection: "column", gap: "12px", overflow: "hidden" }}>
         
         {room.type === "code" && (
           <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -177,7 +178,11 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa" }}>
+          <div style={{ 
+            position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", 
+            border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa",
+            backgroundImage: "radial-gradient(circle, #e5e5e5 1px, transparent 1px)", backgroundSize: "20px 20px"
+          }}>
             <Whiteboard 
               roomId={id as string} 
               token={localStorage.getItem("token") || ""} 
@@ -189,7 +194,7 @@ export default function RoomPage() {
               }}
             />
             {/* Floating Diagram Generator */}
-            <div style={{ position: "absolute", top: "20px", right: "20px", width: "300px", maxHeight: "50%", overflowY: "auto", backgroundColor: "#1e1e1e", color: "white", padding: "16px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", top: "24px", right: "24px", width: "320px", maxHeight: "50%", overflowY: "auto", backgroundColor: "#1e1e1e", color: "white", padding: "24px", borderRadius: "12px", boxShadow: "0 8px 30px rgba(0,0,0,0.4)", zIndex: 1000, boxSizing: "border-box" }}>
               <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
             </div>
           </div>
