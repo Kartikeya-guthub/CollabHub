@@ -113,6 +113,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             textAlign: "center",
             verticalAlign: "middle",
             baseline: 18,
+            lineHeight: 1.25,
           });
         }
       });
@@ -203,6 +204,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             textAlign: "center",
             verticalAlign: "middle",
             baseline: 14,
+            lineHeight: 1.25,
           });
         }
       });
