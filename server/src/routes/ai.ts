@@ -121,7 +121,7 @@ Lay shapes out in a readable, non-overlapping grid based on the described flow. 
       }
     }
 
-    if (!success) {
+    if (!success || !completion) {
       throw lastError || new Error("All AI providers failed to generate diagram");
     }
 
