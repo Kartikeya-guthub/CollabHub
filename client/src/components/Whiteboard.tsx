@@ -10,13 +10,29 @@ interface WhiteboardProps {
 }
 
 export default function Whiteboard({ roomId, token, onMount }: WhiteboardProps) {
-  const store = useSync({
+  const storeData = useSync({
     uri: `${process.env.NEXT_PUBLIC_WS_URL || "http://localhost:4000"}/tldraw-sync/${roomId}?token=${token}`,
   });
 
+  if (storeData.status === "loading") {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", height: "100%" }}>
+        <p style={{ color: "#888" }}>Connecting to whiteboard...</p>
+      </div>
+    );
+  }
+
+  if (storeData.status === "error") {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", height: "100%" }}>
+        <p style={{ color: "red" }}>Failed to connect to whiteboard.</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <Tldraw store={store} onMount={onMount} />
+      <Tldraw store={storeData.store} onMount={onMount} />
     </div>
   );
 }
