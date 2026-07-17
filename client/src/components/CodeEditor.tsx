@@ -74,13 +74,16 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
 
       if (!res.body) throw new Error("No response body");
 
-      // Clear the editor first (bypass readOnly lock)
-      doc.transact(() => {
-        const ytext = doc.getText("monaco");
-        if (ytext.length > 0) {
-          ytext.delete(0, ytext.length);
-        }
-      });
+      // Clear the editor natively by temporarily unlocking it
+      if (editorRef.current) {
+        editorRef.current.updateOptions({ readOnly: false });
+        const model = editorRef.current.getModel();
+        editorRef.current.executeEdits("ai-clear", [{
+          range: model.getFullModelRange(),
+          text: ""
+        }]);
+        editorRef.current.updateOptions({ readOnly: true });
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -109,10 +112,17 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
               if (cleanText.includes("```cpp")) cleanText = cleanText.replace("```cpp\n", "");
               if (cleanText.includes("```")) cleanText = cleanText.replace("```\n", "").replace("```", "");
               
-              const ytext = doc.getText("monaco");
-              doc.transact(() => {
-                ytext.insert(ytext.length, cleanText);
-              });
+              const model = editorRef.current.getModel();
+              const lineCount = model.getLineCount();
+              const lastLineLength = model.getLineMaxColumn(lineCount);
+              
+              editorRef.current.updateOptions({ readOnly: false });
+              editorRef.current.executeEdits("ai-stream", [{
+                range: { startLineNumber: lineCount, startColumn: lastLineLength, endLineNumber: lineCount, endColumn: lastLineLength },
+                text: cleanText,
+                forceMoveMarkers: true
+              }]);
+              editorRef.current.updateOptions({ readOnly: true });
             }
           } catch (e) {
             console.error("Error parsing AI chunk:", e, payload);
