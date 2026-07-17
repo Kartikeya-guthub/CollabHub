@@ -161,10 +161,15 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
         const fromShape = newElements.find(el => el.id === mappedFrom) || fromShapeOrig;
         const toShape = newElements.find(el => el.id === mappedTo) || toShapeOrig;
 
-        const fromCenterX = fromShape.x + fromShape.w / 2;
-        const fromCenterY = fromShape.y + fromShape.h / 2;
-        const toCenterX = toShape.x + toShape.w / 2;
-        const toCenterY = toShape.y + toShape.h / 2;
+        const fromW = fromShape.width || fromShape.w;
+        const fromH = fromShape.height || fromShape.h;
+        const toW = toShape.width || toShape.w;
+        const toH = toShape.height || toShape.h;
+
+        const fromCenterX = fromShape.x + fromW / 2;
+        const fromCenterY = fromShape.y + fromH / 2;
+        const toCenterX = toShape.x + toW / 2;
+        const toCenterY = toShape.y + toH / 2;
 
         const dx = toCenterX - fromCenterX;
         const dy = toCenterY - fromCenterY;
@@ -174,28 +179,28 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
         if (Math.abs(dx) > Math.abs(dy)) {
           // Horizontal connection
           if (dx > 0) {
-            startX = fromShape.x + fromShape.w;
+            startX = fromShape.x + fromW;
             startY = fromCenterY;
             endX = toShape.x;
             endY = toCenterY;
           } else {
             startX = fromShape.x;
             startY = fromCenterY;
-            endX = toShape.x + toShape.w;
+            endX = toShape.x + toW;
             endY = toCenterY;
           }
         } else {
           // Vertical connection
           if (dy > 0) {
             startX = fromCenterX;
-            startY = fromShape.y + fromShape.h;
+            startY = fromShape.y + fromH;
             endX = toCenterX;
             endY = toShape.y;
           } else {
             startX = fromCenterX;
             startY = fromShape.y;
             endX = toCenterX;
-            endY = toShape.y + toShape.h;
+            endY = toShape.y + toH;
           }
         }
         const arrowId = `arrow-${Math.floor(Math.random() * 1000000000)}`;
