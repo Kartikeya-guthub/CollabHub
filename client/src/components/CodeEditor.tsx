@@ -51,7 +51,7 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
           code: currentCode, 
           question: "Generate the full boilerplate/template code for this. If it's a function, fill in the rest of the template including a main/driver function so it runs. IMPORTANT: The driver function MUST read input dynamically from standard input (e.g. cin or getline) instead of using hardcoded values. DO NOT print any interactive prompts like 'Enter input:'. Just read the input silently and output the result. RETURN ONLY RAW CODE, NO MARKDOWN, NO BACKTICKS, NO EXPLANATIONS. Start immediately with the code.", 
           language: "c++", 
-          mode: "fast" 
+          mode: "deep" 
         }),
       });
 
