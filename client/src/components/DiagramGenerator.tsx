@@ -71,7 +71,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
           seed: Math.floor(Math.random() * 1000000000),
           groupIds: [],
           roundness: s.type === "rectangle" ? { type: 3 } : null,
-          boundElements: [],
+          boundElements: s.label ? [{ id: `${shapeId}-text`, type: "text" }] : [],
           updated: Date.now(),
           link: null,
           locked: false
@@ -114,6 +114,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             verticalAlign: "middle",
             baseline: 18,
             lineHeight: 1.25,
+            containerId: shapeId,
           });
         }
       });
@@ -153,7 +154,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
           seed: Math.floor(Math.random() * 1000000000),
           groupIds: [],
           roundness: { type: 2 },
-          boundElements: [],
+          boundElements: c.label ? [{ id: `${arrowId}-text`, type: "text" }] : [],
           updated: Date.now(),
           link: null,
           locked: false,
@@ -205,6 +206,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             verticalAlign: "middle",
             baseline: 14,
             lineHeight: 1.25,
+            containerId: arrowId,
           });
         }
       });
