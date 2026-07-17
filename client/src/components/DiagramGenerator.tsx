@@ -80,7 +80,6 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
 
         if (s.label) {
           const textId = `${shapeId}-text`;
-          shapeEl.boundElements = [{ id: textId, type: "text" }];
           
           newElements.push({
             type: "text",
@@ -94,8 +93,8 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             roughness: 0,
             opacity: 100,
             angle: 0,
-            x: s.x + s.w / 2, 
-            y: s.y + s.h / 2,
+            x: s.x + 10, 
+            y: s.y + s.h / 2 - 12,
             strokeColor: "#000000",
             backgroundColor: "transparent",
             width: s.label.length * 10,
@@ -110,9 +109,10 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             fontSize: 20,
             fontFamily: 1,
             text: s.label,
+            originalText: s.label,
             textAlign: "center",
             verticalAlign: "middle",
-            containerId: shapeId,
+            baseline: 18,
           });
         }
       });
@@ -170,7 +170,6 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
 
         if (c.label) {
           const textId = `${arrowId}-text`;
-          arrowEl.boundElements = [{ id: textId, type: "text" }];
           
           newElements.push({
             type: "text",
@@ -200,9 +199,10 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             fontSize: 16,
             fontFamily: 1,
             text: c.label,
+            originalText: c.label,
             textAlign: "center",
             verticalAlign: "middle",
-            containerId: arrowId,
+            baseline: 14,
           });
         }
       });
