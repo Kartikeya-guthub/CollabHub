@@ -201,7 +201,7 @@ export default function RoomPage() {
                 setEditor(ed);
               }}
             />
-            <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
+            <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} doc={docRef.current} />
           </div>
         )}
 
@@ -236,7 +236,7 @@ export default function RoomPage() {
                   setEditor(ed);
                 }}
               />
-              <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
+              <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} doc={docRef.current} />
             </Panel>
           </PanelGroup>
         )}

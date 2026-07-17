@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as Y from "yjs";
 
 interface DiagramShape {
   id: string;
@@ -20,14 +21,25 @@ interface DiagramConnection {
 
 import { Wand2, X } from "lucide-react";
 
-export default function DiagramGenerator({ editor, token }: { editor: any | null; token: string }) {
+export default function DiagramGenerator({ editor, token, doc }: { editor: any | null; token: string; doc?: Y.Doc }) {
   const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [globalLoading, setGlobalLoading] = useState(false);
+
+  useEffect(() => {
+    if (!doc) return;
+    const editorState = doc.getMap("editor-state");
+    const updateLock = () => setGlobalLoading(!!editorState.get("isGeneratingDiagram"));
+    editorState.observe(updateLock);
+    updateLock();
+    return () => editorState.unobserve(updateLock);
+  }, [doc]);
 
   const generate = async () => {
     if (!description.trim() || !editor) return;
     setLoading(true);
+    if (doc) doc.getMap("editor-state").set("isGeneratingDiagram", true);
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ai/diagram`, {
@@ -127,10 +139,43 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
         
         if (!fromShape || !toShape || !mappedFrom || !mappedTo) return;
 
-        const startX = fromShape.x + fromShape.w / 2;
-        const startY = fromShape.y + fromShape.h / 2;
-        const endX = toShape.x + toShape.w / 2;
-        const endY = toShape.y + toShape.h / 2;
+        const fromCenterX = fromShape.x + fromShape.w / 2;
+        const fromCenterY = fromShape.y + fromShape.h / 2;
+        const toCenterX = toShape.x + toShape.w / 2;
+        const toCenterY = toShape.y + toShape.h / 2;
+
+        const dx = toCenterX - fromCenterX;
+        const dy = toCenterY - fromCenterY;
+
+        let startX, startY, endX, endY;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          // Horizontal connection
+          if (dx > 0) {
+            startX = fromShape.x + fromShape.w;
+            startY = fromCenterY;
+            endX = toShape.x;
+            endY = toCenterY;
+          } else {
+            startX = fromShape.x;
+            startY = fromCenterY;
+            endX = toShape.x + toShape.w;
+            endY = toCenterY;
+          }
+        } else {
+          // Vertical connection
+          if (dy > 0) {
+            startX = fromCenterX;
+            startY = fromShape.y + fromShape.h;
+            endX = toCenterX;
+            endY = toShape.y;
+          } else {
+            startX = fromCenterX;
+            startY = fromShape.y;
+            endX = toCenterX;
+            endY = toShape.y + toShape.h;
+          }
+        }
         const arrowId = `arrow-${Math.floor(Math.random() * 1000000000)}`;
 
         const arrowEl: any = {
@@ -219,6 +264,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
       alert("Couldn't generate diagram — try rephrasing the description. " + err.message);
     } finally {
       setLoading(false);
+      if (doc) doc.getMap("editor-state").set("isGeneratingDiagram", false);
     }
   };
 
@@ -305,21 +351,22 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
           />
           <button 
             onClick={generate} 
-            disabled={loading || !editor || !description.trim()}
-            style={{ 
-              width: "100%", 
-              padding: "12px", 
-              borderRadius: "8px", 
-              whiteSpace: "nowrap", 
-              boxSizing: "border-box",
-              background: "#3b82f6",
+            disabled={loading || globalLoading || !editor || !description.trim()}
+            style={{
+              background: (loading || globalLoading) ? "#4d4d4d" : "#3b82f6",
               color: "white",
               border: "none",
-              cursor: (loading || !editor || !description.trim()) ? "not-allowed" : "pointer",
-              opacity: (loading || !editor || !description.trim()) ? 0.5 : 1
+              padding: "8px 16px",
+              borderRadius: "6px",
+              fontWeight: 600,
+              cursor: (loading || globalLoading) ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
             }}
           >
-            {loading ? "Generating..." : "Generate Diagram"}
+            {(loading || globalLoading) && <div className="animate-spin" style={{ width: "14px", height: "14px", border: "2px solid white", borderTopColor: "transparent", borderRadius: "50%" }} />}
+            {loading ? "Generating..." : globalLoading ? "Someone is generating..." : "Generate Diagram"}
           </button>
         </div>
       </div>

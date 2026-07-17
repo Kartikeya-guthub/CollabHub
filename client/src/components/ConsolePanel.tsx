@@ -16,25 +16,32 @@ export default function ConsolePanel({ roomId, getCode, language, token, doc }: 
   const [stdout, setStdout] = useState("");
   const [isRunning, setIsRunning] = useState(false);
 
+  const [globalIsRunning, setGlobalIsRunning] = useState(false);
+
   useEffect(() => {
     if (!doc) return;
     
     const yStdin = doc.getText("console-input");
     const yStdout = doc.getText("console-output");
+    const editorState = doc.getMap("editor-state");
 
     const updateStdin = () => setStdin(yStdin.toString());
     const updateStdout = () => setStdout(yStdout.toString());
+    const updateLock = () => setGlobalIsRunning(!!editorState.get("isRunningCode"));
 
     yStdin.observe(updateStdin);
     yStdout.observe(updateStdout);
+    editorState.observe(updateLock);
 
     // Initial sync
     updateStdin();
     updateStdout();
+    updateLock();
 
     return () => {
       yStdin.unobserve(updateStdin);
       yStdout.unobserve(updateStdout);
+      editorState.unobserve(updateLock);
     };
   }, [doc]);
 
@@ -62,6 +69,7 @@ export default function ConsolePanel({ roomId, getCode, language, token, doc }: 
 
   const handleRun = async () => {
     setIsRunning(true);
+    if (doc) doc.getMap("editor-state").set("isRunningCode", true);
     updateSharedOutput("Running...");
     try {
       // Create a single test case out of the custom stdin
@@ -90,6 +98,7 @@ export default function ConsolePanel({ roomId, getCode, language, token, doc }: 
       updateSharedOutput(e.message);
     } finally {
       setIsRunning(false);
+      if (doc) doc.getMap("editor-state").set("isRunningCode", false);
     }
   };
 
@@ -104,17 +113,17 @@ export default function ConsolePanel({ roomId, getCode, language, token, doc }: 
           </div>
           <button 
             onClick={handleRun}
-            disabled={isRunning}
+            disabled={isRunning || globalIsRunning}
             style={{
               display: "flex", alignItems: "center", gap: "6px",
-              backgroundColor: isRunning ? "#4d4d4d" : "#4CAF50",
+              backgroundColor: (isRunning || globalIsRunning) ? "#4d4d4d" : "#4CAF50",
               color: "white", border: "none", padding: "4px 12px",
-              borderRadius: "4px", cursor: isRunning ? "not-allowed" : "pointer",
+              borderRadius: "4px", cursor: (isRunning || globalIsRunning) ? "not-allowed" : "pointer",
               fontWeight: 600, fontSize: "12px"
             }}
           >
-            {isRunning ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} fill="currentColor" />}
-            Run
+            {(isRunning || globalIsRunning) ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} fill="currentColor" />}
+            {isRunning ? "Running..." : globalIsRunning ? "Running..." : "Run"}
           </button>
         </div>
         <textarea 
