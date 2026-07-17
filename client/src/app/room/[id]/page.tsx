@@ -177,24 +177,19 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "8px" }}>
-            {/* Whiteboard canvas — takes most of the space */}
+          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa" }}>
+            <Whiteboard 
+              roomId={id as string} 
+              token={localStorage.getItem("token") || ""} 
+              onMount={(ed) => {
+                setEditor(ed);
+              }}
+            />
+            {/* AI Diagram Generator — floating over whiteboard */}
             <div style={{ 
-              flex: 1, minHeight: 0, borderRadius: "12px", overflow: "hidden", 
-              border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa",
-            }}>
-              <Whiteboard 
-                roomId={id as string} 
-                token={localStorage.getItem("token") || ""} 
-                onMount={(ed) => {
-                  setEditor(ed);
-                }}
-              />
-            </div>
-            {/* AI Diagram Generator — sits below the whiteboard */}
-            <div style={{ 
-              flexShrink: 0, backgroundColor: "#1e1e1e", color: "white", padding: "16px 20px", 
-              borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)",
+              position: "absolute", top: 80, right: 24, width: 320, zIndex: 1000, 
+              backgroundColor: "rgba(30, 30, 30, 0.9)", color: "white", padding: "16px", 
+              borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(10px)"
             }}>
               <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
             </div>
@@ -222,7 +217,7 @@ export default function RoomPage() {
             
             <VerticalHandle />
             
-            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa" }}>
+            <Panel defaultSize={50} minSize={20} style={{ backgroundColor: "#fafafa", position: "relative" }}>
               <Whiteboard 
                 roomId={id as string} 
                 token={localStorage.getItem("token") || ""} 
@@ -230,18 +225,28 @@ export default function RoomPage() {
                   setEditor(ed);
                 }}
               />
+              {/* AI Diagram Generator — floating over whiteboard */}
+              <div style={{ 
+                position: "absolute", top: 80, right: 24, width: 320, zIndex: 1000, 
+                backgroundColor: "rgba(30, 30, 30, 0.9)", color: "white", padding: "16px", 
+                borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(10px)"
+              }}>
+                <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
+              </div>
             </Panel>
           </PanelGroup>
         )}
       </div>
 
-      {/* Floating Global AI Chat */}
-      <AskAIPanel 
-        doc={docRef.current}
-        getCode={() => docRef.current?.getText("monaco").toString() || ""}
-        language="c++"
-        token={localStorage.getItem("token") || ""}
-      />
+      {/* Floating Global AI Chat - only show if not just a whiteboard */}
+      {room.type !== "whiteboard" && (
+        <AskAIPanel 
+          doc={docRef.current}
+          getCode={() => docRef.current?.getText("monaco").toString() || ""}
+          language="c++"
+          token={localStorage.getItem("token") || ""}
+        />
+      )}
     </div>
   );
 }
