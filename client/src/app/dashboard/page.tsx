@@ -9,6 +9,8 @@ interface Room {
   created_at: string;
 }
 
+import ParticleNetwork from "@/components/ParticleNetwork";
+
 export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [name, setName] = useState("");
@@ -64,11 +66,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 20px" }}>
+    <>
+      <ParticleNetwork />
+      <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 20px", position: "relative", zIndex: 1 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px" }}>
         <h1 style={{ fontSize: "2rem", fontWeight: 600 }}>Your Dashboard</h1>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <span style={{ color: "var(--foreground)", opacity: 0.7 }}>
+          <span style={{ color: "var(--ink-subtle)", opacity: 0.9 }}>
             Hello, {displayName}
           </span>
           <button 
@@ -86,11 +90,11 @@ export default function Dashboard() {
       <div className="bento-grid" style={{ gridTemplateColumns: "1fr 2fr", padding: 0 }}>
         
         {/* Create Room Panel */}
-        <div className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px", height: "fit-content" }}>
-          <h2 style={{ fontSize: "1.2rem", margin: 0 }}>Create a new room</h2>
+        <div className="linear-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px", height: "fit-content" }}>
+          <h2 style={{ fontSize: "1.2rem", margin: 0, fontWeight: 500 }}>Create a new room</h2>
           
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <label style={{ fontSize: "0.9rem", color: "var(--foreground)", opacity: 0.8 }}>Room Name</label>
+            <label style={{ fontSize: "0.9rem", color: "var(--ink-subtle)" }}>Room Name</label>
             <input 
               className="input-field"
               value={name} 
@@ -100,15 +104,15 @@ export default function Dashboard() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <label style={{ fontSize: "0.9rem", color: "var(--foreground)", opacity: 0.8 }}>Room Type</label>
+            <label style={{ fontSize: "0.9rem", color: "var(--ink-subtle)" }}>Room Type</label>
             <select 
               className="input-field"
               value={type} 
               onChange={(e) => setType(e.target.value as Room["type"])}
             >
-              <option value="code" style={{ background: "#1e1e1e", color: "#fff" }}>Code Editor</option>
-              <option value="whiteboard" style={{ background: "#1e1e1e", color: "#fff" }}>Whiteboard</option>
-              <option value="both" style={{ background: "#1e1e1e", color: "#fff" }}>Both (Split View)</option>
+              <option value="code" style={{ background: "var(--surface-1)", color: "var(--ink)" }}>Code Editor</option>
+              <option value="whiteboard" style={{ background: "var(--surface-1)", color: "var(--ink)" }}>Whiteboard</option>
+              <option value="both" style={{ background: "var(--surface-1)", color: "var(--ink)" }}>Both (Split View)</option>
             </select>
           </div>
 
@@ -118,11 +122,11 @@ export default function Dashboard() {
         </div>
 
         {/* Room List Panel */}
-        <div className="glass-panel" style={{ padding: "24px" }}>
-          <h2 style={{ fontSize: "1.2rem", margin: "0 0 20px 0" }}>Recent Rooms</h2>
+        <div className="linear-panel" style={{ padding: "24px" }}>
+          <h2 style={{ fontSize: "1.2rem", margin: "0 0 20px 0", fontWeight: 500 }}>Recent Rooms</h2>
           
           {rooms.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)", opacity: 0.5 }}>
+            <div style={{ textAlign: "center", padding: "40px", color: "var(--ink-subtle)" }}>
               You haven't joined any rooms yet.
             </div>
           ) : (
@@ -135,17 +139,17 @@ export default function Dashboard() {
                     justifyContent: "space-between", 
                     alignItems: "center",
                     padding: "16px",
-                    background: "rgba(0,0,0,0.2)",
+                    background: "var(--surface-2)",
                     borderRadius: "12px",
-                    border: "1px solid var(--glass-border)"
+                    border: "1px solid var(--hairline)"
                   }}
                 >
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <a href={`/room/${r.id}`} style={{ color: "var(--foreground)", textDecoration: "none", fontSize: "1.1rem", fontWeight: 500 }}>
+                    <a href={`/room/${r.id}`} style={{ color: "var(--ink)", textDecoration: "none", fontSize: "1.1rem", fontWeight: 500 }}>
                       {r.name}
                     </a>
-                    <div style={{ display: "flex", gap: "10px", fontSize: "0.8rem", color: "var(--foreground)", opacity: 0.6 }}>
-                      <span style={{ textTransform: "capitalize", background: "var(--glass-bg)", padding: "2px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)" }}>
+                    <div style={{ display: "flex", gap: "10px", fontSize: "0.8rem", color: "var(--ink-subtle)" }}>
+                      <span style={{ textTransform: "capitalize", background: "var(--canvas)", padding: "2px 8px", borderRadius: "4px", border: "1px solid var(--hairline-strong)" }}>
                         {r.type}
                       </span>
                       <span>{new Date(r.created_at).toLocaleDateString()}</span>
@@ -178,5 +182,6 @@ export default function Dashboard() {
 
       </div>
     </div>
+    </>
   );
 }

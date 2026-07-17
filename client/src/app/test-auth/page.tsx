@@ -33,5 +33,12 @@ export default function TestAuth() {
       });
   }, []);
 
-  return <div>Authenticating and joining room...</div>;
+  return (
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+      <div className="linear-panel" style={{ padding: "40px", textAlign: "center", width: "100%", maxWidth: "400px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: 600, letterSpacing: "-0.6px", marginBottom: "12px" }}>Authenticating</h2>
+        <p style={{ color: "var(--ink-subtle)", fontSize: "14px", marginBottom: "0" }}>Joining the workspace...</p>
+      </div>
+    </div>
+  );
 }

@@ -36,9 +36,9 @@ export default function JoinRoom() {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <div className="glass-panel" style={{ padding: "40px", textAlign: "center" }}>
-        <h2>Joining Room...</h2>
-        <p style={{ opacity: 0.7 }}>Please wait while we verify your invitation.</p>
+      <div className="linear-panel" style={{ padding: "40px", textAlign: "center", width: "100%", maxWidth: "400px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: 600, letterSpacing: "-0.6px", marginBottom: "12px" }}>Joining Room...</h2>
+        <p style={{ color: "var(--ink-subtle)", fontSize: "14px", marginBottom: "0" }}>Please wait while we verify your invitation.</p>
       </div>
     </div>
   );

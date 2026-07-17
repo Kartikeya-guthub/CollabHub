@@ -107,9 +107,9 @@ export default function RoomPage() {
   if (error) return null;
   if (!room || !docRef.current || !awarenessRef.current) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "#0f0f11", color: "white" }}>
-        <div className="glass-panel" style={{ padding: "40px", textAlign: "center", borderRadius: "16px" }}>
-          <h2 style={{ fontWeight: 500 }}>Connecting to Workspace...</h2>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "var(--canvas)", color: "var(--ink)" }}>
+        <div className="linear-panel" style={{ padding: "40px", textAlign: "center", width: "100%", maxWidth: "400px" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: 600, letterSpacing: "-0.6px", marginBottom: "12px" }}>Connecting to Workspace...</h2>
         </div>
       </div>
     );
@@ -129,26 +129,14 @@ export default function RoomPage() {
   );
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#0f0f11" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--canvas)" }}>
       {/* Top Navigation Bar */}
-      <div style={{ 
-        margin: "12px", 
-        padding: "12px 24px", 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center",
-        backgroundColor: "rgba(30, 30, 30, 0.6)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.05)",
-        borderRadius: "12px",
-        zIndex: 10,
-        color: "white"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <button style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "white", padding: "6px 12px", borderRadius: "6px", cursor: "pointer" }} onClick={() => router.push("/dashboard")}>← Dashboard</button>
+      <div className="top-nav">
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
+          <button className="btn-secondary" onClick={() => router.push("/dashboard")}>← Dashboard</button>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>{room.name}</span>
-            <span style={{ fontSize: "0.8rem", padding: "4px 8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", textTransform: "capitalize", marginLeft: "4px" }}>
+            <span style={{ fontSize: "14px", fontWeight: 500 }}>{room.name}</span>
+            <span style={{ fontSize: "12px", padding: "2px 6px", background: "var(--surface-2)", color: "var(--ink-subtle)", borderRadius: "4px", textTransform: "capitalize", marginLeft: "4px" }}>
               {room.type} Mode
             </span>
           </div>
@@ -159,7 +147,7 @@ export default function RoomPage() {
             <UnifiedPresenceList awareness={awarenessRef.current} editor={editor} layout="horizontal" />
           </div>
           <button 
-            style={{ background: "#a855f7", border: "none", color: "white", padding: "6px 16px", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
+            className="btn-primary"
             onClick={() => {
               const link = `${window.location.origin}/room/${room.id}/join`;
               navigator.clipboard.writeText(link);
@@ -171,10 +159,10 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div style={{ flex: 1, padding: "0 12px 12px 12px", display: "flex", flexDirection: "column", gap: "12px", overflow: "hidden" }}>
+      <div style={{ flex: 1, padding: "12px", display: "flex", flexDirection: "column", gap: "12px", overflow: "hidden" }}>
         
         {room.type === "code" && (
-          <PanelGroup direction="vertical" style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <PanelGroup direction="vertical" style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid var(--hairline-strong)" }}>
             <Panel defaultSize={70} minSize={20}>
               <CodeEditor doc={docRef.current} awareness={awarenessRef.current} />
             </Panel>
@@ -192,7 +180,7 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa" }}>
+          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--hairline-strong)", backgroundColor: "var(--inverse-canvas)" }}>
             <Whiteboard 
               roomId={id as string} 
               token={localStorage.getItem("token") || ""} 
