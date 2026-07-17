@@ -12,11 +12,13 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
+  const editorRef = useRef<any>(null);
   const bindingRef = useRef<MonacoBinding | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [globalIsGenerating, setGlobalIsGenerating] = useState(false);
 
   const handleMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
     const ytext = doc.getText("monaco");
     const editorState = doc.getMap("editor-state");
 
@@ -72,21 +74,30 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
 
       if (!res.body) throw new Error("No response body");
 
-      // Clear the editor first (only clear, do not replace during streaming to preserve cursors)
-      doc.transact(() => {
-        if (ytext.length > 0) {
-          ytext.delete(0, ytext.length);
-        }
-      });
+      // Clear the editor first natively
+      if (editorRef.current) {
+        const model = editorRef.current.getModel();
+        editorRef.current.executeEdits("ai-clear", [{
+          range: model.getFullModelRange(),
+          text: ""
+        }]);
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+        buffer += decoder.decode(value, { stream: true });
+        let newlineIndex;
+        
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6).trim();
           if (payload === "[DONE]") continue;
@@ -94,15 +105,20 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
 
           try {
             const parsed = JSON.parse(payload);
-            if (parsed.text) {
+            if (parsed.text && editorRef.current) {
               let cleanText = parsed.text;
-              // Very naive strip of any markdown backticks if AI ignores instruction
               if (cleanText.includes("```cpp")) cleanText = cleanText.replace("```cpp\n", "");
               if (cleanText.includes("```")) cleanText = cleanText.replace("```\n", "").replace("```", "");
               
-              doc.transact(() => {
-                ytext.insert(ytext.length, cleanText);
-              });
+              const model = editorRef.current.getModel();
+              const lineCount = model.getLineCount();
+              const lastLineLength = model.getLineMaxColumn(lineCount);
+              
+              editorRef.current.executeEdits("ai-stream", [{
+                range: { startLineNumber: lineCount, startColumn: lastLineLength, endLineNumber: lineCount, endColumn: lastLineLength },
+                text: cleanText,
+                forceMoveMarkers: true
+              }]);
             }
           } catch (e) {
             console.error("Error parsing AI chunk:", e, payload);
