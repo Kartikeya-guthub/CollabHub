@@ -18,7 +18,10 @@ interface DiagramConnection {
   label?: string;
 }
 
+import { Wand2, X } from "lucide-react";
+
 export default function DiagramGenerator({ editor, token }: { editor: any | null; token: string }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +33,8 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ai/diagram`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ description, mode: "fast" }), // Always default to fast for diagramming
+        // Upgraded to "deep" mode for better spatial reasoning
+        body: JSON.stringify({ description, mode: "deep" }), 
       });
 
       if (!res.ok) throw new Error("Diagram generation failed");
@@ -66,7 +70,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
           height: s.h,
           seed: Math.floor(Math.random() * 1000000000),
           groupIds: [],
-          roundness: s.type === "rectangle" ? { type: 3 } : null, // slightly rounded rects
+          roundness: s.type === "rectangle" ? { type: 3 } : null,
           boundElements: [],
           updated: Date.now(),
           link: null,
@@ -90,7 +94,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             roughness: 0,
             opacity: 100,
             angle: 0,
-            x: s.x + s.w / 2, // Centered text (Excalidraw handles alignment)
+            x: s.x + s.w / 2, 
             y: s.y + s.h / 2,
             strokeColor: "#000000",
             backgroundColor: "transparent",
@@ -108,7 +112,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             text: s.label,
             textAlign: "center",
             verticalAlign: "middle",
-            containerId: shapeId, // Bind to container shape
+            containerId: shapeId,
           });
         }
       });
@@ -147,7 +151,7 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
           height: Math.abs(endY - startY) || 1,
           seed: Math.floor(Math.random() * 1000000000),
           groupIds: [],
-          roundness: { type: 2 }, // Curved arrows
+          roundness: { type: 2 },
           boundElements: [],
           updated: Date.now(),
           link: null,
@@ -198,19 +202,15 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
             text: c.label,
             textAlign: "center",
             verticalAlign: "middle",
-            containerId: arrowId, // Bind to arrow
+            containerId: arrowId,
           });
         }
       });
 
-      // Fetch existing elements so we don't overwrite them
       const currentElements = editor.getSceneElements();
-      
-      editor.updateScene({ 
-        elements: [...currentElements, ...newElements] 
-      });
-
+      editor.updateScene({ elements: [...currentElements, ...newElements] });
       setDescription("");
+      setIsOpen(false);
     } catch (err: any) {
       alert("Couldn't generate diagram — try rephrasing the description. " + err.message);
     } finally {
@@ -218,36 +218,106 @@ export default function DiagramGenerator({ editor, token }: { editor: any | null
     }
   };
 
+  if (!isOpen) {
+    return (
+      <button 
+        onClick={() => setIsOpen(true)}
+        style={{
+          position: "absolute",
+          bottom: "104px", // Placed above the global copilot icon
+          right: "24px",
+          width: "64px",
+          height: "64px",
+          borderRadius: "50%",
+          backgroundColor: "#3b82f6", // Blue color to distinguish from the purple copilot
+          color: "white",
+          border: "none",
+          boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          zIndex: 1000,
+          transition: "transform 0.2s"
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+        title="Generate AI Diagram"
+      >
+        <Wand2 size={28} />
+      </button>
+    );
+  }
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px", height: "100%" }}>
-      <p style={{ opacity: 0.8, fontSize: "0.9rem", margin: 0 }}>
-        Describe a flow or diagram and the AI will draw it on the whiteboard for you.
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" }}>
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && generate()}
-          disabled={loading || !editor}
-          placeholder="e.g., three boxes in a pipe"
-          style={{ 
-            width: "100%", 
-            background: "rgba(0,0,0,0.2)",
-            border: "1px solid var(--glass-border)",
-            color: "var(--foreground)",
-            padding: "12px",
-            borderRadius: "8px",
-            boxSizing: "border-box"
-          }}
-        />
-        <button 
-          onClick={generate} 
-          disabled={loading || !editor || !description.trim()}
-          className="btn-primary"
-          style={{ width: "100%", padding: "12px", borderRadius: "8px", whiteSpace: "nowrap", boxSizing: "border-box" }}
-        >
-          {loading ? "Generating..." : "Generate Diagram"}
+    <div style={{ 
+      position: "absolute", 
+      top: 80, 
+      right: 24, 
+      width: 320, 
+      zIndex: 1000, 
+      backgroundColor: "rgba(30, 30, 30, 0.95)", 
+      color: "white", 
+      borderRadius: "12px", 
+      border: "1px solid rgba(255,255,255,0.1)", 
+      backdropFilter: "blur(10px)",
+      boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+      display: "flex", 
+      flexDirection: "column",
+      overflow: "hidden"
+    }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
+          <Wand2 size={16} color="#3b82f6" />
+          AI Diagram
+        </div>
+        <button onClick={() => setIsOpen(false)} style={{ background: "none", border: "none", color: "white", cursor: "pointer", opacity: 0.7 }}>
+          <X size={18} />
         </button>
+      </div>
+
+      <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <p style={{ opacity: 0.8, fontSize: "0.9rem", margin: 0 }}>
+          Describe a flow or diagram and the AI will draw it for you.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && generate()}
+            disabled={loading || !editor}
+            placeholder="e.g., three boxes in a pipe"
+            style={{ 
+              width: "100%", 
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid var(--glass-border)",
+              color: "white",
+              padding: "12px",
+              borderRadius: "8px",
+              boxSizing: "border-box",
+              outline: "none"
+            }}
+          />
+          <button 
+            onClick={generate} 
+            disabled={loading || !editor || !description.trim()}
+            style={{ 
+              width: "100%", 
+              padding: "12px", 
+              borderRadius: "8px", 
+              whiteSpace: "nowrap", 
+              boxSizing: "border-box",
+              background: "#3b82f6",
+              color: "white",
+              border: "none",
+              cursor: (loading || !editor || !description.trim()) ? "not-allowed" : "pointer",
+              opacity: (loading || !editor || !description.trim()) ? 0.5 : 1
+            }}
+          >
+            {loading ? "Generating..." : "Generate Diagram"}
+          </button>
+        </div>
       </div>
     </div>
   );

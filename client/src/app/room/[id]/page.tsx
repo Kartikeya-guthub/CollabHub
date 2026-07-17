@@ -185,14 +185,7 @@ export default function RoomPage() {
                 setEditor(ed);
               }}
             />
-            {/* AI Diagram Generator — floating over whiteboard */}
-            <div style={{ 
-              position: "absolute", top: 80, right: 24, width: 320, zIndex: 1000, 
-              backgroundColor: "rgba(30, 30, 30, 0.9)", color: "white", padding: "16px", 
-              borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(10px)"
-            }}>
-              <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
-            </div>
+            <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
           </div>
         )}
 
@@ -225,14 +218,7 @@ export default function RoomPage() {
                   setEditor(ed);
                 }}
               />
-              {/* AI Diagram Generator — floating over whiteboard */}
-              <div style={{ 
-                position: "absolute", top: 80, right: 24, width: 320, zIndex: 1000, 
-                backgroundColor: "rgba(30, 30, 30, 0.9)", color: "white", padding: "16px", 
-                borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(10px)"
-              }}>
-                <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
-              </div>
+              <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
             </Panel>
           </PanelGroup>
         )}
