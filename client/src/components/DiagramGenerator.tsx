@@ -55,6 +55,23 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
         connections: DiagramConnection[];
       };
 
+      const wrapText = (text: string, maxLen: number) => {
+        if (!text) return "";
+        const words = text.split(" ");
+        let lines = [];
+        let currentLine = "";
+        for (const word of words) {
+          if ((currentLine + " " + word).length > maxLen) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = currentLine ? currentLine + " " + word : word;
+          }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines.join("\n");
+      };
+
       const newElements: any[] = [];
       const idMap = new Map<string, string>();
       
@@ -78,8 +95,8 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
           y: s.y,
           strokeColor: s.color || "#000000",
           backgroundColor: "#ffffff",
-          width: s.w,
-          height: s.h,
+          width: Math.max(s.w || 150, (s.label?.length || 0) * 11 + 40),
+          height: Math.max(s.h || 60, 60),
           seed: Math.floor(Math.random() * 1000000000),
           groupIds: [],
           roundness: s.type === "rectangle" ? { type: 3 } : null,
@@ -132,12 +149,17 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
       });
 
       connections.forEach((c) => {
-        const fromShape = shapes.find(sh => sh.id === c.from);
-        const toShape = shapes.find(sh => sh.id === c.to);
+        // Find updated shapes using the ID map to use their new dynamically adjusted width/height
+        const fromShapeOrig = shapes.find(sh => sh.id === c.from);
+        const toShapeOrig = shapes.find(sh => sh.id === c.to);
         const mappedFrom = idMap.get(c.from);
         const mappedTo = idMap.get(c.to);
         
-        if (!fromShape || !toShape || !mappedFrom || !mappedTo) return;
+        if (!fromShapeOrig || !toShapeOrig || !mappedFrom || !mappedTo) return;
+
+        // Find the actual generated element objects to get the updated widths
+        const fromShape = newElements.find(el => el.id === mappedFrom) || fromShapeOrig;
+        const toShape = newElements.find(el => el.id === mappedTo) || toShapeOrig;
 
         const fromCenterX = fromShape.x + fromShape.w / 2;
         const fromCenterY = fromShape.y + fromShape.h / 2;
@@ -217,7 +239,7 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
 
         if (c.label) {
           const textId = `${arrowId}-text`;
-          
+          const wrappedLabel = wrapText(c.label, 15);
           newElements.push({
             type: "text",
             version: 1,
@@ -233,9 +255,9 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
             x: (startX + endX) / 2, 
             y: (startY + endY) / 2,
             strokeColor: "#000000",
-            backgroundColor: "transparent",
-            width: c.label.length * 10,
-            height: 25,
+            backgroundColor: "#ffffff",
+            width: 150,
+            height: 25 * wrappedLabel.split("\n").length,
             seed: Math.floor(Math.random() * 1000000000),
             groupIds: [],
             roundness: null,
@@ -243,10 +265,10 @@ export default function DiagramGenerator({ editor, token, doc }: { editor: any |
             updated: Date.now(),
             link: null,
             locked: false,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 1,
-            text: c.label,
-            originalText: c.label,
+            text: wrappedLabel,
+            originalText: wrappedLabel,
             textAlign: "center",
             verticalAlign: "middle",
             baseline: 14,
