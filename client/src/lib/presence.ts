@@ -16,12 +16,4 @@ export const initLocalPresence = (awareness: Awareness, userId: string, displayN
   });
 };
 
-import { Editor } from "tldraw";
 
-export const syncTldrawIdentity = (editor: Editor, userId: string, displayName: string) => {
-  editor.user.updateUserPreferences({
-    id: userId,
-    name: displayName,
-    color: colorForUser(userId),
-  });
-};

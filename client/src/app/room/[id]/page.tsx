@@ -16,8 +16,7 @@ import UnifiedPresenceList from "@/components/UnifiedPresenceList";
 import ConsolePanel from "@/components/ConsolePanel";
 import AskAIPanel from "@/components/AskAIPanel";
 import DiagramGenerator from "@/components/DiagramGenerator";
-import { initLocalPresence, syncTldrawIdentity } from "@/lib/presence";
-import { Editor } from "tldraw";
+import { initLocalPresence } from "@/lib/presence";
 import { Socket } from "socket.io-client";
 
 interface RoomMeta {
@@ -35,7 +34,7 @@ export default function RoomPage() {
   
   const [room, setRoom] = useState<RoomMeta | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [editor, setEditor] = useState<Editor | null>(null);
+  const [editor, setEditor] = useState<any>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   
   const docRef = useRef<Y.Doc | null>(null);
@@ -189,9 +188,6 @@ export default function RoomPage() {
                 token={localStorage.getItem("token") || ""} 
                 onMount={(ed) => {
                   setEditor(ed);
-                  const userId = localStorage.getItem("userId") || "anon";
-                  const displayName = localStorage.getItem("displayName") || "User";
-                  syncTldrawIdentity(ed, userId, displayName);
                 }}
               />
             </div>
@@ -232,9 +228,6 @@ export default function RoomPage() {
                 token={localStorage.getItem("token") || ""} 
                 onMount={(ed) => {
                   setEditor(ed);
-                  const userId = localStorage.getItem("userId") || "anon";
-                  const displayName = localStorage.getItem("displayName") || "User";
-                  syncTldrawIdentity(ed, userId, displayName);
                 }}
               />
             </Panel>

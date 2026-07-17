@@ -89,29 +89,4 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ── Protect tldraw UI from Tailwind preflight ── */
-/* Tailwind's CSS reset strips default styles from buttons, SVGs, inputs, etc.
-   Tldraw's toolbar relies on those styles. This restores them inside tldraw containers. */
-.tl-container button,
-.tl-container [class^="tlui-"] button {
-  all: revert;
-}
-
-.tl-container svg {
-  display: inline;
-  vertical-align: baseline;
-}
-
-.tl-container input,
-.tl-container select,
-.tl-container textarea {
-  all: revert;
-}
-
-/* Ensure tldraw's own CSS takes priority over Tailwind inside the canvas */
-.tl-container *,
-.tl-container *::before,
-.tl-container *::after {
-  box-sizing: content-box;
-}
 

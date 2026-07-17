@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Awareness } from "y-protocols/awareness";
-import { Editor } from "tldraw";
+
 
 interface PresenceUser {
   id: string;
@@ -16,7 +16,7 @@ export default function UnifiedPresenceList({
   layout = "vertical"
 }: {
   awareness?: Awareness | null;
-  editor?: Editor | null;
+  editor?: any | null;
   layout?: "vertical" | "horizontal";
 }) {
   const [users, setUsers] = useState<Map<string, PresenceUser>>(new Map());
@@ -32,7 +32,7 @@ export default function UnifiedPresenceList({
         }
       }
 
-      if (editor) {
+      if (editor && typeof editor.getCollaborators === "function") {
         for (const p of editor.getCollaborators()) {
           const existing = merged.get(p.userId);
           merged.set(p.userId, {

@@ -1,34 +1,36 @@
-// @ts-nocheck
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Tldraw, Editor, createTLStore, defaultShapeUtils } from "tldraw";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import "@excalidraw/excalidraw/index.css";
+
+// Dynamically import Excalidraw to prevent SSR issues
+const Excalidraw = dynamic(
+  async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+  { ssr: false }
+);
 
 interface WhiteboardProps {
   roomId: string;
   token: string;
-  onMount?: (editor: Editor) => void;
+  onMount?: (api: any) => void;
 }
 
-/**
- * Whiteboard that always renders a working local tldraw canvas.
- * Real-time sync will be layered on top via Yjs in a future iteration;
- * for now the canvas is fully functional for drawing + AI diagram generation.
- */
 export default function Whiteboard({ roomId, token, onMount }: WhiteboardProps) {
-  const [store] = useState(() =>
-    createTLStore({ shapeUtils: defaultShapeUtils })
-  );
+  const [isClient, setIsClient] = useState(false);
 
-  const handleMount = useCallback(
-    (editor: Editor) => {
-      onMount?.(editor);
-    },
-    [onMount]
-  );
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <Tldraw store={store} onMount={handleMount} />
+      {isClient && (
+        <Excalidraw
+          excalidrawAPI={(api: any) => {
+            if (onMount) onMount(api);
+          }}
+        />
+      )}
     </div>
   );
 }
