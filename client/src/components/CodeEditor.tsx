@@ -74,14 +74,13 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
 
       if (!res.body) throw new Error("No response body");
 
-      // Clear the editor first natively
-      if (editorRef.current) {
-        const model = editorRef.current.getModel();
-        editorRef.current.executeEdits("ai-clear", [{
-          range: model.getFullModelRange(),
-          text: ""
-        }]);
-      }
+      // Clear the editor first (bypass readOnly lock)
+      doc.transact(() => {
+        const ytext = doc.getText("monaco");
+        if (ytext.length > 0) {
+          ytext.delete(0, ytext.length);
+        }
+      });
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -110,15 +109,10 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
               if (cleanText.includes("```cpp")) cleanText = cleanText.replace("```cpp\n", "");
               if (cleanText.includes("```")) cleanText = cleanText.replace("```\n", "").replace("```", "");
               
-              const model = editorRef.current.getModel();
-              const lineCount = model.getLineCount();
-              const lastLineLength = model.getLineMaxColumn(lineCount);
-              
-              editorRef.current.executeEdits("ai-stream", [{
-                range: { startLineNumber: lineCount, startColumn: lastLineLength, endLineNumber: lineCount, endColumn: lastLineLength },
-                text: cleanText,
-                forceMoveMarkers: true
-              }]);
+              const ytext = doc.getText("monaco");
+              doc.transact(() => {
+                ytext.insert(ytext.length, cleanText);
+              });
             }
           } catch (e) {
             console.error("Error parsing AI chunk:", e, payload);
