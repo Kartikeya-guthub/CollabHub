@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useRef } from "react";
 import * as Y from "yjs";
-import { SyncYjsExcalidraw } from "@mizuka-wu/y-excalidraw";
+import { ExcalidrawBinding } from "@mizuka-wu/y-excalidraw";
 import "@excalidraw/excalidraw/index.css";
 
 // Dynamically import Excalidraw to prevent SSR issues
@@ -35,8 +35,9 @@ export default function Whiteboard({ roomId, token, doc, onMount }: WhiteboardPr
       }
 
       // We bind the Y.Array directly to the Excalidraw API
-      syncBindingRef.current = new SyncYjsExcalidraw(
+      syncBindingRef.current = new ExcalidrawBinding(
         doc.getArray("excalidraw-elements"),
+        doc.getMap("excalidraw-assets"),
         excalidrawApiRef.current
       );
     }
