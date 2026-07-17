@@ -48,12 +48,18 @@ export default function UnifiedPresenceList({
     };
 
     update();
-    awareness?.on("change", update);
-    const unsub = editor?.store.listen(update, { source: "remote" });
+    
+    if (awareness) {
+      awareness.on("change", update);
+    }
+    
+    // We don't have a reliable listen hook for Excalidraw collaborators yet
+    // without implementing full collaboration sync, so we just rely on awareness for now.
 
     return () => {
-      awareness?.off("change", update);
-      unsub?.();
+      if (awareness) {
+        awareness.off("change", update);
+      }
     };
   }, [awareness, editor]);
 
