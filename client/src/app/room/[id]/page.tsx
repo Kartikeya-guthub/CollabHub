@@ -178,23 +178,28 @@ export default function RoomPage() {
         )}
 
         {room.type === "whiteboard" && (
-          <div style={{ 
-            position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", 
-            border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa",
-            backgroundImage: "radial-gradient(circle, #e5e5e5 1px, transparent 1px)", backgroundSize: "20px 20px"
-          }}>
-            <Whiteboard 
-              roomId={id as string} 
-              token={localStorage.getItem("token") || ""} 
-              onMount={(ed) => {
-                setEditor(ed);
-                const userId = localStorage.getItem("userId") || "anon";
-                const displayName = localStorage.getItem("displayName") || "User";
-                syncTldrawIdentity(ed, userId, displayName);
-              }}
-            />
-            {/* Floating Diagram Generator */}
-            <div style={{ position: "absolute", top: "24px", right: "24px", width: "320px", maxHeight: "50%", overflowY: "auto", backgroundColor: "#1e1e1e", color: "white", padding: "24px", borderRadius: "12px", boxShadow: "0 8px 30px rgba(0,0,0,0.4)", zIndex: 1000, boxSizing: "border-box" }}>
+          <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "8px" }}>
+            {/* Whiteboard canvas — takes most of the space */}
+            <div style={{ 
+              flex: 1, minHeight: 0, borderRadius: "12px", overflow: "hidden", 
+              border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "#fafafa",
+            }}>
+              <Whiteboard 
+                roomId={id as string} 
+                token={localStorage.getItem("token") || ""} 
+                onMount={(ed) => {
+                  setEditor(ed);
+                  const userId = localStorage.getItem("userId") || "anon";
+                  const displayName = localStorage.getItem("displayName") || "User";
+                  syncTldrawIdentity(ed, userId, displayName);
+                }}
+              />
+            </div>
+            {/* AI Diagram Generator — sits below the whiteboard */}
+            <div style={{ 
+              flexShrink: 0, backgroundColor: "#1e1e1e", color: "white", padding: "16px 20px", 
+              borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)",
+            }}>
               <DiagramGenerator editor={editor} token={localStorage.getItem("token") || ""} />
             </div>
           </div>
