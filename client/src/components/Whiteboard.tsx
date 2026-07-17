@@ -10,8 +10,11 @@ interface WhiteboardProps {
 }
 
 export default function Whiteboard({ roomId, token, onMount }: WhiteboardProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:4000";
+  const wsUrl = baseUrl.replace(/^http/, "ws");
+
   const storeData = useSync({
-    uri: `${process.env.NEXT_PUBLIC_WS_URL || "http://localhost:4000"}/tldraw-sync/${roomId}?token=${token}`,
+    uri: `${wsUrl}/tldraw-sync/${roomId}?token=${token}`,
   });
 
   if (storeData.status === "loading") {
