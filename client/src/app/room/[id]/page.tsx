@@ -73,12 +73,7 @@ export default function RoomPage() {
         setError(err.message);
         router.push("/dashboard");
       });
-  }, [id, router]);
 
-  useEffect(() => {
-    if (!room) return;
-
-    const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId") || `anon-${Math.random().toString(36).substring(7)}`;
     const displayName = localStorage.getItem("displayName") || `User ${userId.substring(0,4)}`;
 
@@ -107,7 +102,7 @@ export default function RoomPage() {
       awareness.destroy();
       doc.destroy();
     };
-  }, [room, id, portOverride, router]);
+  }, [id, portOverride, router]);
 
   if (error) return null;
   if (!room || !docRef.current || !awarenessRef.current) {

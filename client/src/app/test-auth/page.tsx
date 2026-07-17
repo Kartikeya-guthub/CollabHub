@@ -25,9 +25,7 @@ export default function TestAuth() {
           "displayName",
           data.user.display_name || data.user.displayName || "Tester"
         );
-        const searchParams = new URLSearchParams(window.location.search);
-        const redirect = searchParams.get("redirect") || "/dashboard";
-        window.location.href = redirect;
+        window.location.href = "/dashboard";
       })
       .catch((err) => {
         console.error("Fetch Error:", err);

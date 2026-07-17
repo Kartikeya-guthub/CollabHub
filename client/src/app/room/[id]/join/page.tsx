@@ -10,7 +10,7 @@ export default function JoinRoom() {
     const token = localStorage.getItem("token");
     if (!token) {
       // User is not logged in. Send to auth page and ideally support ?redirect=/room/[id]/join later
-      router.push(`/test-auth?redirect=/room/${id}/join`);
+      router.push("/test-auth");
       return;
     }
 
