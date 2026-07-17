@@ -14,9 +14,22 @@ interface CodeEditorProps {
 export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
   const bindingRef = useRef<MonacoBinding | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [globalIsGenerating, setGlobalIsGenerating] = useState(false);
 
   const handleMount: OnMount = (editor, monaco) => {
     const ytext = doc.getText("monaco");
+    const editorState = doc.getMap("editor-state");
+
+    // Listen for global generating lock
+    const updateLock = () => {
+      const locked = !!editorState.get("isGenerating");
+      setGlobalIsGenerating(locked);
+      editor.updateOptions({ readOnly: locked });
+    };
+    
+    editorState.observe(updateLock);
+    updateLock(); // initial state
+
     const model = editor.getModel();
     if (!model) return;
 
@@ -42,6 +55,8 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
     const token = localStorage.getItem("token");
     
     setIsGenerating(true);
+    const editorState = doc.getMap("editor-state");
+    editorState.set("isGenerating", true);
     
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ai/ask`, {
@@ -57,9 +72,11 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
 
       if (!res.body) throw new Error("No response body");
 
-      // Clear the editor first
+      // Clear the editor first (only clear, do not replace during streaming to preserve cursors)
       doc.transact(() => {
-        ytext.delete(0, ytext.length);
+        if (ytext.length > 0) {
+          ytext.delete(0, ytext.length);
+        }
       });
 
       const reader = res.body.getReader();
@@ -97,6 +114,8 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
       alert("Failed to generate template");
     } finally {
       setIsGenerating(false);
+      const editorState = doc.getMap("editor-state");
+      editorState.set("isGenerating", false);
     }
   };
 
@@ -113,13 +132,13 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
       {/* Floating Auto-Generate Template Button */}
       <button
         onClick={generateTemplate}
-        disabled={isGenerating}
+        disabled={isGenerating || globalIsGenerating}
         title="Auto-Generate Template from Signature"
         style={{
           position: "absolute",
           bottom: "16px",
           left: "16px",
-          background: isGenerating ? "#4d4d4d" : "rgba(168, 85, 247, 0.9)",
+          background: (isGenerating || globalIsGenerating) ? "#4d4d4d" : "rgba(168, 85, 247, 0.9)",
           color: "white",
           border: "none",
           borderRadius: "8px",
@@ -127,7 +146,7 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          cursor: isGenerating ? "not-allowed" : "pointer",
+          cursor: (isGenerating || globalIsGenerating) ? "not-allowed" : "pointer",
           boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
           fontWeight: 500,
           fontSize: "13px",
@@ -135,8 +154,8 @@ export default function CodeEditor({ doc, awareness }: CodeEditorProps) {
           backdropFilter: "blur(4px)"
         }}
       >
-        {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-        {isGenerating ? "Generating..." : "Auto-Complete Template"}
+        {(isGenerating || globalIsGenerating) ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+        {isGenerating ? "Generating..." : globalIsGenerating ? "Someone is generating..." : "Auto-Complete Template"}
       </button>
     </div>
   );

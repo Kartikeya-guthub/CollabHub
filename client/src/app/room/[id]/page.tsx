@@ -50,8 +50,22 @@ export default function RoomPage() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Not a member or room not found");
+      .then(async (res) => {
+        if (res.status === 403) {
+          // Not a member, try to auto-join
+          const joinRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${id}/join`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (joinRes.ok) {
+            // Re-fetch room data after joining
+            const retryRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${id}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (retryRes.ok) return retryRes.json();
+          }
+        }
+        if (!res.ok) throw new Error("Room not found or access denied");
         return res.json();
       })
       .then(data => setRoom(data))
@@ -171,6 +185,7 @@ export default function RoomPage() {
                 getCode={() => docRef.current?.getText("monaco").toString() || ""}
                 language="c++"
                 token={localStorage.getItem("token") || ""}
+                doc={docRef.current}
               />
             </Panel>
           </PanelGroup>
@@ -181,6 +196,7 @@ export default function RoomPage() {
             <Whiteboard 
               roomId={id as string} 
               token={localStorage.getItem("token") || ""} 
+              doc={docRef.current}
               onMount={(ed) => {
                 setEditor(ed);
               }}
@@ -203,6 +219,7 @@ export default function RoomPage() {
                     getCode={() => docRef.current?.getText("monaco").toString() || ""}
                     language="c++"
                     token={localStorage.getItem("token") || ""}
+                    doc={docRef.current}
                   />
                 </Panel>
               </PanelGroup>
@@ -214,6 +231,7 @@ export default function RoomPage() {
               <Whiteboard 
                 roomId={id as string} 
                 token={localStorage.getItem("token") || ""} 
+                doc={docRef.current}
                 onMount={(ed) => {
                   setEditor(ed);
                 }}

@@ -1,22 +1,68 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Play, Terminal, SquareTerminal, Loader2 } from "lucide-react";
+import * as Y from "yjs";
 
 interface ConsolePanelProps {
   roomId: string;
   getCode: () => string;
   language: string;
   token: string;
+  doc?: Y.Doc;
 }
 
-export default function ConsolePanel({ roomId, getCode, language, token }: ConsolePanelProps) {
+export default function ConsolePanel({ roomId, getCode, language, token, doc }: ConsolePanelProps) {
   const [stdin, setStdin] = useState("");
   const [stdout, setStdout] = useState("");
   const [isRunning, setIsRunning] = useState(false);
 
+  useEffect(() => {
+    if (!doc) return;
+    
+    const yStdin = doc.getText("console-input");
+    const yStdout = doc.getText("console-output");
+
+    const updateStdin = () => setStdin(yStdin.toString());
+    const updateStdout = () => setStdout(yStdout.toString());
+
+    yStdin.observe(updateStdin);
+    yStdout.observe(updateStdout);
+
+    // Initial sync
+    updateStdin();
+    updateStdout();
+
+    return () => {
+      yStdin.unobserve(updateStdin);
+      yStdout.unobserve(updateStdout);
+    };
+  }, [doc]);
+
+  const handleStdinChange = (val: string) => {
+    setStdin(val); // optimistic UI update
+    if (doc) {
+      const yStdin = doc.getText("console-input");
+      doc.transact(() => {
+        if (yStdin.length > 0) yStdin.delete(0, yStdin.length);
+        yStdin.insert(0, val);
+      });
+    }
+  };
+
+  const updateSharedOutput = (val: string) => {
+    setStdout(val);
+    if (doc) {
+      const yStdout = doc.getText("console-output");
+      doc.transact(() => {
+        if (yStdout.length > 0) yStdout.delete(0, yStdout.length);
+        yStdout.insert(0, val);
+      });
+    }
+  };
+
   const handleRun = async () => {
     setIsRunning(true);
-    setStdout("Running...");
+    updateSharedOutput("Running...");
     try {
       // Create a single test case out of the custom stdin
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/execute`, {
@@ -39,9 +85,9 @@ export default function ConsolePanel({ roomId, getCode, language, token }: Conso
       if (result.stderr) outputText += `Error:\n${result.stderr}\n\n`;
       outputText += `${result.actualOutput}`;
       
-      setStdout(outputText || "(No output)");
+      updateSharedOutput(outputText || "(No output)");
     } catch (e: any) {
-      setStdout(e.message);
+      updateSharedOutput(e.message);
     } finally {
       setIsRunning(false);
     }
@@ -73,7 +119,7 @@ export default function ConsolePanel({ roomId, getCode, language, token }: Conso
         </div>
         <textarea 
           value={stdin}
-          onChange={(e) => setStdin(e.target.value)}
+          onChange={(e) => handleStdinChange(e.target.value)}
           placeholder="Enter custom input here..."
           style={{ flex: 1, backgroundColor: "transparent", border: "none", color: "inherit", padding: "12px", resize: "none", outline: "none", fontFamily: "inherit" }}
         />
