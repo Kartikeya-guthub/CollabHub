@@ -19,7 +19,7 @@
   "type": "commonjs",
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
-    "@tldraw/sync-core": "^5.2.4",
+    "@tldraw/sync-core": "^5.2.5",
     "@tldraw/tlschema": "^5.2.4",
     "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
