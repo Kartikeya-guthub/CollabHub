@@ -10,7 +10,7 @@ interface WhiteboardProps {
 }
 
 export default function Whiteboard({ roomId, token, onMount }: WhiteboardProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:4000";
+  const baseUrl = process.env.NEXT_PUBLIC_WS_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const wsUrl = baseUrl.replace(/^http/, "ws");
 
   const storeData = useSync({
